@@ -47,6 +47,19 @@ function startSplash(){splashStart=0;requestAnimationFrame(splashLoop)}
 setTimeout(()=>{if(!splashStart)startSplash()},3000);
 // Click/tap to skip splash
 so.addEventListener('click',()=>{splashPhase=3;so.classList.add('fade-out');setTimeout(()=>{so.classList.add('hidden');showMainMenu()},400)});
+// --- MENU MUSIC ---
+const menuMusic=new Audio('menu_music.mp3');
+menuMusic.loop=true;menuMusic.volume=0.4;
+let menuMusicStarted=false;
+function playMenuMusic(){
+if(menuMusicStarted)return;
+menuMusicStarted=true;
+menuMusic.currentTime=0;
+menuMusic.play().catch(()=>{});}
+function fadeOutMenuMusic(){
+if(menuMusic.paused)return;
+let vol=menuMusic.volume;
+const fade=setInterval(()=>{vol-=0.02;if(vol<=0){clearInterval(fade);menuMusic.pause();menuMusic.currentTime=0;menuMusic.volume=0.4;menuMusicStarted=false}else{menuMusic.volume=vol}},40)}
 function showMainMenu(){const mm=document.getElementById('main-menu');mm.classList.remove('hidden');
 const mc=document.getElementById('menu-bg-canvas');const mctx=mc.getContext('2d');mc.width=window.innerWidth;mc.height=window.innerHeight;
 const menuParticles=[];for(let i=0;i<80;i++){menuParticles.push({x:Math.random()*mc.width,y:Math.random()*mc.height,vx:(Math.random()-.5)*.3,vy:-.2-Math.random()*.3,r:Math.random()*2+.5,color:['#00c6fb','#005bea','#7c3aed','#f472b6'][Math.floor(Math.random()*4)],a:Math.random()*.2+.05})}
@@ -55,18 +68,21 @@ const rg=mctx.createRadialGradient(mc.width/2,mc.height*.6,0,mc.width/2,mc.heigh
 menuParticles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.y<-10){p.y=mc.height+10;p.x=Math.random()*mc.width}if(p.x<0)p.x=mc.width;if(p.x>mc.width)p.x=0;mctx.globalAlpha=p.a*(.5+Math.sin(t/600+p.x*.01)*.5);mctx.fillStyle=p.color;mctx.beginPath();mctx.arc(p.x,p.y,p.r,0,Math.PI*2);mctx.fill()});mctx.globalAlpha=1;
 requestAnimationFrame(menuBgLoop)}
 requestAnimationFrame(menuBgLoop);
+// Start menu music (needs user interaction first)
+playMenuMusic();
 const saved=localStorage.getItem('kapsul-v6');if(saved){try{const s=JSON.parse(saved);if(s.unlocked>1){document.getElementById('continue-btn').style.display='block'}}catch(e){}}
 }
 window.showMainMenu=showMainMenu;
+// If splash was clicked (user interaction), music can start
 document.getElementById('new-game-btn').addEventListener('click',()=>{startNewGame()});
 document.getElementById('continue-btn').addEventListener('click',()=>{continueGame()});
-function startNewGame(){const mm=document.getElementById('main-menu');mm.classList.add('fade-out');setTimeout(()=>{mm.classList.add('hidden');document.getElementById('app-container').classList.remove('hidden');
+function startNewGame(){fadeOutMenuMusic();const mm=document.getElementById('main-menu');mm.classList.add('fade-out');setTimeout(()=>{mm.classList.add('hidden');document.getElementById('app-container').classList.remove('hidden');
 // Reset save for new game
 save={stars:{},unlocked:1,best:{}};persist();
 renderRoadmap();
 // Go directly to level 1
 setTimeout(()=>{startGame(0)},400)},600)}
-function continueGame(){const mm=document.getElementById('main-menu');mm.classList.add('fade-out');setTimeout(()=>{mm.classList.add('hidden');document.getElementById('app-container').classList.remove('hidden');
+function continueGame(){fadeOutMenuMusic();const mm=document.getElementById('main-menu');mm.classList.add('fade-out');setTimeout(()=>{mm.classList.add('hidden');document.getElementById('app-container').classList.remove('hidden');
 renderRoadmap()},600)}
 })();
 // --- CONFIG ---
