@@ -58,9 +58,16 @@ requestAnimationFrame(menuBgLoop);
 const saved=localStorage.getItem('kapsul-v6');if(saved){try{const s=JSON.parse(saved);if(s.unlocked>1){document.getElementById('continue-btn').style.display='block'}}catch(e){}}
 }
 window.showMainMenu=showMainMenu;
-document.getElementById('new-game-btn').addEventListener('click',()=>{startGameFromMenu()});
-document.getElementById('continue-btn').addEventListener('click',()=>{startGameFromMenu()});
-function startGameFromMenu(){const mm=document.getElementById('main-menu');mm.classList.add('fade-out');setTimeout(()=>{mm.classList.add('hidden');document.getElementById('app-container').classList.remove('hidden')},600)}
+document.getElementById('new-game-btn').addEventListener('click',()=>{startNewGame()});
+document.getElementById('continue-btn').addEventListener('click',()=>{continueGame()});
+function startNewGame(){const mm=document.getElementById('main-menu');mm.classList.add('fade-out');setTimeout(()=>{mm.classList.add('hidden');document.getElementById('app-container').classList.remove('hidden');
+// Reset save for new game
+save={stars:{},unlocked:1,best:{}};persist();
+renderRoadmap();
+// Go directly to level 1
+setTimeout(()=>{startGame(0)},400)},600)}
+function continueGame(){const mm=document.getElementById('main-menu');mm.classList.add('fade-out');setTimeout(()=>{mm.classList.add('hidden');document.getElementById('app-container').classList.remove('hidden');
+renderRoadmap()},600)}
 })();
 // --- CONFIG ---
 const LEVEL_CONFIGS = (()=>{const c=[];for(let i=1;i<=50;i++){let g,n,d;if(i<=5){g=4;n=4+Math.min(i-1,1);d='easy'}else if(i<=10){g=4;n=5+Math.floor((i-6)/2);d='easy'}else if(i<=18){g=5;n=5+Math.floor((i-11)/2);d='medium'}else if(i<=26){g=5;n=7+Math.floor((i-19)/3);d='medium'}else if(i<=35){g=6;n=7+Math.floor((i-27)/3);d='hard'}else if(i<=43){g=6;n=9+Math.floor((i-36)/3);d='expert'}else{g=7;n=10+Math.floor((i-44)/3);d='master'}n=Math.min(n,g===4?6:g===5?9:g===6?12:14);c.push({level:i,gridSize:g,numCount:n,diff:d})}return c})();
