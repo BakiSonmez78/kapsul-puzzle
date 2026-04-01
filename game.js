@@ -18,10 +18,18 @@ ctx.fillStyle='#0a0a1a';ctx.fillRect(0,0,w,h);
 if(!img||!img.complete||!img.naturalWidth)return;
 ctx.globalAlpha=alpha;
 const iw=img.naturalWidth,ih=img.naturalHeight;
-const scale=Math.max(w/iw,h/ih);
+// Contain mode: fit image inside screen with max size limit
+const maxW=Math.min(w*.85,480),maxH=Math.min(h*.6,400);
+const scale=Math.min(maxW/iw,maxH/ih);
 const dw=iw*scale,dh=ih*scale;
 const dx=(w-dw)/2,dy=(h-dh)/2;
-ctx.drawImage(img,dx,dy,dw,dh);
+// Subtle glow behind image
+ctx.shadowColor='rgba(0,91,234,0.3)';ctx.shadowBlur=40;
+ctx.fillStyle='rgba(0,91,234,0.05)';ctx.beginPath();
+ctx.roundRect(dx-10,dy-10,dw+20,dh+20,16);ctx.fill();ctx.shadowBlur=0;
+// Draw image with rounded corners
+ctx.save();ctx.beginPath();ctx.roundRect(dx,dy,dw,dh,12);ctx.clip();
+ctx.drawImage(img,dx,dy,dw,dh);ctx.restore();
 ctx.globalAlpha=1}
 function splashLoop(t){
 if(!splashStart)splashStart=t;

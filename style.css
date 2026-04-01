@@ -140,5 +140,54 @@ html,body{width:100%;height:100%;font-family:var(--font);background:var(--bg);co
 .btn-secondary:hover{background:var(--card);color:var(--text)}
 @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-4px)}40%,80%{transform:translateX(4px)}}
 .shake{animation:shake .4s ease}
-@media(max-width:520px){:root{--cell:48px}.logo-letter{font-size:20px}.node-circle{width:46px;height:46px;font-size:16px}.capsule-number{font-size:20px}.clue-target{font-size:17px}.num-btn{width:42px;height:42px;font-size:18px}.ctrl-btn{padding:8px 12px;font-size:12px}}
-@media(max-width:380px){:root{--cell:40px}.node-circle{width:42px;height:42px;font-size:15px}.capsule-number{font-size:18px}.num-btn{width:38px;height:38px;font-size:16px}}
+@media(max-width:520px){
+:root{--cell:48px}
+.logo-letter{font-size:20px}
+.node-circle{width:46px;height:46px;font-size:16px}
+.capsule-number{font-size:20px}
+.clue-target{font-size:17px}
+.num-btn{width:42px;height:42px;font-size:18px}
+.ctrl-btn{padding:8px 12px;font-size:12px}
+.menu-title-glow{font-size:42px;letter-spacing:3px}
+.menu-subtitle-text{font-size:11px;letter-spacing:4px;margin-bottom:35px}
+.menu-btn-play{padding:14px 32px;font-size:16px}
+.menu-btn-secondary{padding:12px 28px;font-size:14px}
+.menu-buttons{width:200px}
+.menu-footer{margin-top:40px;font-size:10px}
+.modal-content{margin:10px;padding:24px 18px}
+.win-title{font-size:22px}
+.win-stars{font-size:32px}
+.tutorial-title{font-size:20px}
+.game-header{padding:8px 12px}
+.level-badge{font-size:13px;padding:4px 12px}
+}
+@media(max-width:380px){
+:root{--cell:40px}
+.node-circle{width:42px;height:42px;font-size:15px}
+.capsule-number{font-size:18px}
+.num-btn{width:38px;height:38px;font-size:16px}
+.menu-title-glow{font-size:34px;letter-spacing:2px}
+.menu-subtitle-text{font-size:10px;letter-spacing:3px;margin-bottom:28px}
+.menu-btn-play{padding:12px 24px;font-size:14px}
+.menu-btn-secondary{padding:10px 20px;font-size:13px}
+.menu-buttons{width:180px}
+.menu-footer{margin-top:30px;font-size:9px}
+.menu-header{padding:8px 12px 20px}
+.header-stats{gap:4px}
+.stat-chip{padding:4px 8px;font-size:10px}
+}
+@media(max-width:320px){
+:root{--cell:36px}
+.menu-title-glow{font-size:28px}
+.node-circle{width:38px;height:38px;font-size:14px}
+.num-btn{width:34px;height:34px;font-size:14px}
+}
+/* Landscape phone fix */
+@media(max-height:500px){
+.menu-title-glow{font-size:32px;margin-bottom:4px}
+.menu-subtitle-text{font-size:10px;margin-bottom:20px}
+.menu-buttons{gap:8px}
+.menu-btn-play{padding:10px 24px;font-size:14px}
+.menu-btn-secondary{padding:8px 20px;font-size:12px}
+.menu-footer{margin-top:15px}
+}
