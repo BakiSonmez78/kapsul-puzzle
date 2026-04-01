@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Kapsül Oyunu | Sayı Bulmacası</title>
+    <meta name="description" content="50 seviyeli profesyonel kapsül bulmaca oyunu">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+    <canvas id="confetti-canvas"></canvas>
+    <div class="app">
+        <!-- MENU SCREEN -->
+        <div class="screen active" id="menu-screen">
+            <div class="menu-header">
+                <div class="logo-pill"><span class="logo-letter">K</span><span class="logo-letter">A</span><span class="logo-letter">P</span><span class="logo-letter">S</span><span class="logo-letter">Ü</span><span class="logo-letter">L</span></div>
+                <div class="subtitle">SAYI BULMACASI</div>
+                <div class="header-stats">
+                    <div class="stat-chip">⭐ <span id="total-stars">0</span> /150</div>
+                    <button class="stat-chip clickable" id="how-to-play-btn">❓ Nasıl Oynanır?</button>
+                </div>
+            </div>
+            <div class="roadmap-scroll" id="roadmap-scroll">
+                <div class="roadmap-container" id="roadmap-container">
+                    <canvas id="roadmap-canvas"></canvas>
+                    <div class="roadmap-nodes" id="roadmap-nodes"></div>
+                    <canvas id="char-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- GAME SCREEN -->
+        <div class="screen" id="game-screen">
+            <div class="game-header">
+                <button class="icon-btn" id="back-btn">←</button>
+                <span class="level-badge" id="level-badge">Seviye 1</span>
+                <div class="timer">🕐 <span id="timer-text">00:00</span></div>
+            </div>
+            <div class="game-area">
+                <div class="grid-wrapper" id="grid-wrapper">
+                    <div class="grid-container" id="grid-container"></div>
+                </div>
+                <div class="number-palette" id="number-palette"></div>
+                <div class="game-controls">
+                    <button class="ctrl-btn" id="undo-btn">↩ Geri Al</button>
+                    <button class="ctrl-btn" id="clear-btn">🗑 Temizle</button>
+                    <button class="ctrl-btn accent" id="hint-btn">💡 İpucu</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- WIN MODAL -->
+        <div class="modal" id="win-modal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <div class="win-stars" id="win-stars">⭐⭐⭐</div>
+                <div class="win-title">Tebrikler!</div>
+                <div class="win-subtitle" id="win-subtitle">Mükemmel!</div>
+                <div class="win-stats">
+                    <div class="stat"><span class="stat-label">Yıldız</span><span class="stat-value" id="win-star-count">3</span></div>
+                    <div class="stat"><span class="stat-label">Süre</span><span class="stat-value" id="win-time">00:00</span></div>
+                    <div class="stat"><span class="stat-label">İpucu</span><span class="stat-value" id="win-hints">0</span></div>
+                </div>
+                <div class="win-actions">
+                    <button class="btn-primary" id="next-level-btn">Sonraki Seviye →</button>
+                    <button class="btn-secondary" id="menu-btn">Ana Menü</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TUTORIAL MODAL -->
+        <div class="modal" id="tutorial-modal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content tutorial-content">
+                <div class="tutorial-title">Nasıl Oynanır?</div>
+                <div class="tutorial-steps">
+                    <div class="tutorial-step"><div class="step-num">1</div><div class="step-text"><strong>Sayı Seç</strong><p>Alt paletten kullanmak istediğin sayıya tıkla.</p></div></div>
+                    <div class="tutorial-step"><div class="step-num">2</div><div class="step-text"><strong>Kapsüle Yerleştir</strong><p>Seçtiğin sayıyı bir kapsüle tıklayarak yerleştir.</p></div></div>
+                    <div class="tutorial-step"><div class="step-num">3</div><div class="step-text"><strong>Toplamları Kontrol Et</strong><p>Her satır ve sütunun toplamı kenardaki sayıya eşit olmalı.</p></div></div>
+                    <div class="tutorial-step"><div class="step-num">4</div><div class="step-text"><strong>Tamamla!</strong><p>Tüm kapsülleri doğru doldurursan seviyeyi geçersin!</p></div></div>
+                </div>
+                <div class="tutorial-tips"><p>💡 İpucu butonuyla yardım alabilirsin (yıldız puanını düşürür).</p><p>↩ Geri al butonuyla hamleleri geri alabilirsin.</p><p>⌨️ Klavyeden 1-9 tuşlarıyla sayı seçebilirsin.</p></div>
+                <button class="btn-primary" id="close-tutorial-btn">Anladım!</button>
+            </div>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
