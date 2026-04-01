@@ -79,9 +79,7 @@ document.getElementById('continue-btn').addEventListener('click',()=>{continueGa
 function startNewGame(){fadeOutMenuMusic();const mm=document.getElementById('main-menu');mm.classList.add('fade-out');setTimeout(()=>{mm.classList.add('hidden');document.getElementById('app-container').classList.remove('hidden');
 // Reset save for new game
 save={stars:{},unlocked:1,best:{}};persist();
-renderRoadmap();
-// Go directly to level 1
-setTimeout(()=>{startGame(0)},400)},600)}
+renderRoadmap()},600)}
 function continueGame(){fadeOutMenuMusic();const mm=document.getElementById('main-menu');mm.classList.add('fade-out');setTimeout(()=>{mm.classList.add('hidden');document.getElementById('app-container').classList.remove('hidden');
 renderRoadmap()},600)}
 })();
