@@ -88,6 +88,11 @@ playMenuMusic();
 const saved=localStorage.getItem('kapsul-v6');if(saved){try{const s=JSON.parse(saved);if(s.unlocked>1){document.getElementById('continue-btn').style.display='block'}}catch(e){}}
 }
 window.showMainMenu=showMainMenu;
+window.fadeOut=fadeOut;
+window.fadeIn=fadeIn;
+window.playRoadmapMusic=playRoadmapMusic;
+window.roadmapMusic=roadmapMusic;
+window.menuMusic=menuMusic;
 document.getElementById('new-game-btn').addEventListener('click',()=>{unlockMobileAudio();startNewGame()});
 document.getElementById('continue-btn').addEventListener('click',()=>{unlockMobileAudio();continueGame()});
 function startNewGame(){fadeOut(menuMusic,600,()=>{playRoadmapMusic()});const mm=document.getElementById('main-menu');mm.classList.add('fade-out');setTimeout(()=>{mm.classList.add('hidden');document.getElementById('app-container').classList.remove('hidden');
