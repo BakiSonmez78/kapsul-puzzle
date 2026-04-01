@@ -1,6 +1,59 @@
 // ============================================
 // KAPSÜL v6 - Full Vanilla JS Professional
 // ============================================
+// --- SPLASH SCREEN SEQUENCE (Real Images) ---
+(function(){
+const sc=document.getElementById('splash-canvas');const sctx=sc.getContext('2d');const so=document.getElementById('splash-overlay');
+function resizeSplash(){sc.width=window.innerWidth;sc.height=window.innerHeight}
+resizeSplash();window.addEventListener('resize',resizeSplash);
+// Preload splash images
+const splashImages=[];const splashSrcs=['splash_yaz.jpg','splash_antigravity.jpg','splash_kapsul.jpg'];
+let imagesLoaded=0;
+splashSrcs.forEach((src,i)=>{const img=new Image();img.onload=()=>{imagesLoaded++;if(imagesLoaded===3)startSplash()};img.onerror=()=>{imagesLoaded++;if(imagesLoaded===3)startSplash()};img.src=src;splashImages[i]=img});
+let splashPhase=0;let splashStart=0;
+const phaseDurations=[2200,2200,2200];
+const fadeTime=500;
+function drawImageCover(ctx,img,w,h,alpha){
+ctx.fillStyle='#0a0a1a';ctx.fillRect(0,0,w,h);
+if(!img||!img.complete||!img.naturalWidth)return;
+ctx.globalAlpha=alpha;
+const iw=img.naturalWidth,ih=img.naturalHeight;
+const scale=Math.max(w/iw,h/ih);
+const dw=iw*scale,dh=ih*scale;
+const dx=(w-dw)/2,dy=(h-dh)/2;
+ctx.drawImage(img,dx,dy,dw,dh);
+ctx.globalAlpha=1}
+function splashLoop(t){
+if(!splashStart)splashStart=t;
+const w=sc.width,h=sc.height;const elapsed=t-splashStart;const dur=phaseDurations[splashPhase]||2200;
+let alpha=1;
+if(elapsed<fadeTime)alpha=elapsed/fadeTime;
+else if(elapsed>dur-fadeTime)alpha=Math.max(0,(dur-elapsed)/fadeTime);
+sctx.fillStyle='#0a0a1a';sctx.fillRect(0,0,w,h);
+drawImageCover(sctx,splashImages[splashPhase],w,h,alpha);
+if(elapsed>=dur){splashPhase++;splashStart=t;
+if(splashPhase>=3){so.classList.add('fade-out');setTimeout(()=>{so.classList.add('hidden');showMainMenu()},600);return}}
+requestAnimationFrame(splashLoop)}
+function startSplash(){splashStart=0;requestAnimationFrame(splashLoop)}
+// If images take too long, start anyway after 3s
+setTimeout(()=>{if(!splashStart)startSplash()},3000);
+// Click/tap to skip splash
+so.addEventListener('click',()=>{splashPhase=3;so.classList.add('fade-out');setTimeout(()=>{so.classList.add('hidden');showMainMenu()},400)});
+function showMainMenu(){const mm=document.getElementById('main-menu');mm.classList.remove('hidden');
+const mc=document.getElementById('menu-bg-canvas');const mctx=mc.getContext('2d');mc.width=window.innerWidth;mc.height=window.innerHeight;
+const menuParticles=[];for(let i=0;i<80;i++){menuParticles.push({x:Math.random()*mc.width,y:Math.random()*mc.height,vx:(Math.random()-.5)*.3,vy:-.2-Math.random()*.3,r:Math.random()*2+.5,color:['#00c6fb','#005bea','#7c3aed','#f472b6'][Math.floor(Math.random()*4)],a:Math.random()*.2+.05})}
+function menuBgLoop(t){mctx.fillStyle='#0a0a1a';mctx.fillRect(0,0,mc.width,mc.height);
+const rg=mctx.createRadialGradient(mc.width/2,mc.height*.6,0,mc.width/2,mc.height*.6,mc.width*.4);rg.addColorStop(0,'rgba(0,91,234,0.06)');rg.addColorStop(1,'transparent');mctx.fillStyle=rg;mctx.fillRect(0,0,mc.width,mc.height);
+menuParticles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.y<-10){p.y=mc.height+10;p.x=Math.random()*mc.width}if(p.x<0)p.x=mc.width;if(p.x>mc.width)p.x=0;mctx.globalAlpha=p.a*(.5+Math.sin(t/600+p.x*.01)*.5);mctx.fillStyle=p.color;mctx.beginPath();mctx.arc(p.x,p.y,p.r,0,Math.PI*2);mctx.fill()});mctx.globalAlpha=1;
+requestAnimationFrame(menuBgLoop)}
+requestAnimationFrame(menuBgLoop);
+const saved=localStorage.getItem('kapsul-v6');if(saved){try{const s=JSON.parse(saved);if(s.unlocked>1){document.getElementById('continue-btn').style.display='block'}}catch(e){}}
+}
+window.showMainMenu=showMainMenu;
+document.getElementById('new-game-btn').addEventListener('click',()=>{startGameFromMenu()});
+document.getElementById('continue-btn').addEventListener('click',()=>{startGameFromMenu()});
+function startGameFromMenu(){const mm=document.getElementById('main-menu');mm.classList.add('fade-out');setTimeout(()=>{mm.classList.add('hidden');document.getElementById('app-container').classList.remove('hidden')},600)}
+})();
 // --- CONFIG ---
 const LEVEL_CONFIGS = (()=>{const c=[];for(let i=1;i<=50;i++){let g,n,d;if(i<=5){g=4;n=4+Math.min(i-1,1);d='easy'}else if(i<=10){g=4;n=5+Math.floor((i-6)/2);d='easy'}else if(i<=18){g=5;n=5+Math.floor((i-11)/2);d='medium'}else if(i<=26){g=5;n=7+Math.floor((i-19)/3);d='medium'}else if(i<=35){g=6;n=7+Math.floor((i-27)/3);d='hard'}else if(i<=43){g=6;n=9+Math.floor((i-36)/3);d='expert'}else{g=7;n=10+Math.floor((i-44)/3);d='master'}n=Math.min(n,g===4?6:g===5?9:g===6?12:14);c.push({level:i,gridSize:g,numCount:n,diff:d})}return c})();
 const ZONES=[{name:'🌸 Bahar Vadisi',cls:'meadow',range:[1,10]},{name:'☀️ Yaz Ormanı',cls:'forest',range:[11,20]},{name:'🍂 Sonbahar Tepeleri',cls:'mountain',range:[21,30]},{name:'❄️ Kış Diyarı',cls:'volcano',range:[31,40]},{name:'✨ Büyülü Bahçe',cls:'crystal',range:[41,50]}];

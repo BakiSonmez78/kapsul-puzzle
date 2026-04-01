@@ -9,10 +9,27 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- SPLASH SCREENS -->
+    <div id="splash-overlay" class="splash-overlay">
+        <canvas id="splash-canvas"></canvas>
+    </div>
+    <!-- MAIN MENU -->
+    <div id="main-menu" class="main-menu hidden">
+        <canvas id="menu-bg-canvas"></canvas>
+        <div class="menu-center">
+            <div class="menu-title-glow">KAPSÜL</div>
+            <div class="menu-subtitle-text">SAYI BULMACASI</div>
+            <div class="menu-buttons">
+                <button class="menu-btn-play" id="new-game-btn">🎮 New Game</button>
+                <button class="menu-btn-secondary" id="continue-btn" style="display:none">▶ Devam Et</button>
+            </div>
+            <div class="menu-footer">Yaz Games © 2026</div>
+        </div>
+    </div>
     <canvas id="bg-canvas"></canvas>
     <canvas id="confetti-canvas"></canvas>
-    <div class="app">
-        <!-- MENU SCREEN -->
+    <div class="app hidden" id="app-container">
+        <!-- ROADMAP SCREEN -->
         <div class="screen active" id="menu-screen">
             <div class="menu-header">
                 <div class="logo-pill"><span class="logo-letter">K</span><span class="logo-letter">A</span><span class="logo-letter">P</span><span class="logo-letter">S</span><span class="logo-letter">Ü</span><span class="logo-letter">L</span></div>
