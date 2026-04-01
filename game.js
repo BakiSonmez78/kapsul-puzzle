@@ -7,11 +7,11 @@ const sc=document.getElementById('splash-canvas');const sctx=sc.getContext('2d')
 function resizeSplash(){sc.width=window.innerWidth;sc.height=window.innerHeight}
 resizeSplash();window.addEventListener('resize',resizeSplash);
 // Preload splash images
-const splashImages=[];const splashSrcs=['splash_yaz.jpg','splash_antigravity.jpg','splash_kapsul.jpg'];
+const splashImages=[];const splashSrcs=['splash_yaz.jpg','splash_kapsul_antigravity.jpg'];
 let imagesLoaded=0;
-splashSrcs.forEach((src,i)=>{const img=new Image();img.onload=()=>{imagesLoaded++;if(imagesLoaded===3)startSplash()};img.onerror=()=>{imagesLoaded++;if(imagesLoaded===3)startSplash()};img.src=src;splashImages[i]=img});
+splashSrcs.forEach((src,i)=>{const img=new Image();img.onload=()=>{imagesLoaded++;if(imagesLoaded===2)startSplash()};img.onerror=()=>{imagesLoaded++;if(imagesLoaded===2)startSplash()};img.src=src;splashImages[i]=img});
 let splashPhase=0;let splashStart=0;
-const phaseDurations=[2200,2200,2200];
+const phaseDurations=[2200,2800];
 const fadeTime=500;
 function drawImageCover(ctx,img,w,h,alpha){
 ctx.fillStyle='#0a0a1a';ctx.fillRect(0,0,w,h);
@@ -40,7 +40,7 @@ else if(elapsed>dur-fadeTime)alpha=Math.max(0,(dur-elapsed)/fadeTime);
 sctx.fillStyle='#0a0a1a';sctx.fillRect(0,0,w,h);
 drawImageCover(sctx,splashImages[splashPhase],w,h,alpha);
 if(elapsed>=dur){splashPhase++;splashStart=t;
-if(splashPhase>=3){so.classList.add('fade-out');setTimeout(()=>{so.classList.add('hidden');showMainMenu()},600);return}}
+if(splashPhase>=2){so.classList.add('fade-out');setTimeout(()=>{so.classList.add('hidden');showMainMenu()},600);return}}
 requestAnimationFrame(splashLoop)}
 function startSplash(){splashStart=0;requestAnimationFrame(splashLoop)}
 // If images take too long, start anyway after 3s
