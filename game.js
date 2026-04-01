@@ -45,21 +45,37 @@ requestAnimationFrame(splashLoop)}
 function startSplash(){splashStart=0;requestAnimationFrame(splashLoop)}
 // If images take too long, start anyway after 3s
 setTimeout(()=>{if(!splashStart)startSplash()},3000);
-// Click/tap to skip splash
-so.addEventListener('click',()=>{splashPhase=3;so.classList.add('fade-out');setTimeout(()=>{so.classList.add('hidden');showMainMenu()},400)});
-// --- MENU MUSIC ---
+// Click/tap to skip splash — also unlocks audio on mobile
+so.addEventListener('click',()=>{unlockMobileAudio();splashPhase=3;so.classList.add('fade-out');setTimeout(()=>{so.classList.add('hidden');showMainMenu()},400)});
+// Also unlock on touchstart for iOS
+so.addEventListener('touchstart',()=>{unlockMobileAudio()},{once:true});
+// --- MUSIC SYSTEM (Mobile-Compatible) ---
 const menuMusic=new Audio('menu_music.mp3');
-menuMusic.loop=true;menuMusic.volume=0.4;
-let menuMusicStarted=false;
-function playMenuMusic(){
-if(menuMusicStarted)return;
-menuMusicStarted=true;
-menuMusic.currentTime=0;
-menuMusic.play().catch(()=>{});}
-function fadeOutMenuMusic(){
-if(menuMusic.paused)return;
-let vol=menuMusic.volume;
-const fade=setInterval(()=>{vol-=0.02;if(vol<=0){clearInterval(fade);menuMusic.pause();menuMusic.currentTime=0;menuMusic.volume=0.4;menuMusicStarted=false}else{menuMusic.volume=vol}},40)}
+menuMusic.loop=true;menuMusic.volume=0;
+menuMusic.setAttribute('playsinline','');
+menuMusic.preload='auto';
+const roadmapMusic=new Audio('roadmap.mp3');
+roadmapMusic.loop=true;roadmapMusic.volume=0;
+roadmapMusic.setAttribute('playsinline','');
+roadmapMusic.preload='auto';
+let audioUnlocked=false;
+function unlockMobileAudio(){
+if(audioUnlocked)return;audioUnlocked=true;
+// iOS/Android require play() from user gesture to unlock audio
+menuMusic.play().then(()=>{menuMusic.pause();menuMusic.currentTime=0}).catch(()=>{});
+roadmapMusic.play().then(()=>{roadmapMusic.pause();roadmapMusic.currentTime=0}).catch(()=>{});
+}
+function fadeIn(audio,targetVol,dur){
+audio.volume=0;audio.currentTime=audio.currentTime||0;
+audio.play().catch(()=>{});
+let v=0;const step=targetVol/(dur/30);
+const fi=setInterval(()=>{v+=step;if(v>=targetVol){v=targetVol;clearInterval(fi)}audio.volume=Math.min(v,1)},30)}
+function fadeOut(audio,dur,cb){
+if(audio.paused){if(cb)cb();return}
+let v=audio.volume;const step=v/(dur/30);
+const fo=setInterval(()=>{v-=step;if(v<=0){clearInterval(fo);audio.pause();audio.volume=0;if(cb)cb()}else{audio.volume=Math.max(v,0)}},30)}
+function playMenuMusic(){fadeIn(menuMusic,0.4,800)}
+function playRoadmapMusic(){fadeIn(roadmapMusic,0.35,800)}
 function showMainMenu(){const mm=document.getElementById('main-menu');mm.classList.remove('hidden');
 const mc=document.getElementById('menu-bg-canvas');const mctx=mc.getContext('2d');mc.width=window.innerWidth;mc.height=window.innerHeight;
 const menuParticles=[];for(let i=0;i<80;i++){menuParticles.push({x:Math.random()*mc.width,y:Math.random()*mc.height,vx:(Math.random()-.5)*.3,vy:-.2-Math.random()*.3,r:Math.random()*2+.5,color:['#00c6fb','#005bea','#7c3aed','#f472b6'][Math.floor(Math.random()*4)],a:Math.random()*.2+.05})}
@@ -68,19 +84,16 @@ const rg=mctx.createRadialGradient(mc.width/2,mc.height*.6,0,mc.width/2,mc.heigh
 menuParticles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.y<-10){p.y=mc.height+10;p.x=Math.random()*mc.width}if(p.x<0)p.x=mc.width;if(p.x>mc.width)p.x=0;mctx.globalAlpha=p.a*(.5+Math.sin(t/600+p.x*.01)*.5);mctx.fillStyle=p.color;mctx.beginPath();mctx.arc(p.x,p.y,p.r,0,Math.PI*2);mctx.fill()});mctx.globalAlpha=1;
 requestAnimationFrame(menuBgLoop)}
 requestAnimationFrame(menuBgLoop);
-// Start menu music (needs user interaction first)
 playMenuMusic();
 const saved=localStorage.getItem('kapsul-v6');if(saved){try{const s=JSON.parse(saved);if(s.unlocked>1){document.getElementById('continue-btn').style.display='block'}}catch(e){}}
 }
 window.showMainMenu=showMainMenu;
-// If splash was clicked (user interaction), music can start
-document.getElementById('new-game-btn').addEventListener('click',()=>{startNewGame()});
-document.getElementById('continue-btn').addEventListener('click',()=>{continueGame()});
-function startNewGame(){fadeOutMenuMusic();const mm=document.getElementById('main-menu');mm.classList.add('fade-out');setTimeout(()=>{mm.classList.add('hidden');document.getElementById('app-container').classList.remove('hidden');
-// Reset save for new game
+document.getElementById('new-game-btn').addEventListener('click',()=>{unlockMobileAudio();startNewGame()});
+document.getElementById('continue-btn').addEventListener('click',()=>{unlockMobileAudio();continueGame()});
+function startNewGame(){fadeOut(menuMusic,600,()=>{playRoadmapMusic()});const mm=document.getElementById('main-menu');mm.classList.add('fade-out');setTimeout(()=>{mm.classList.add('hidden');document.getElementById('app-container').classList.remove('hidden');
 save={stars:{},unlocked:1,best:{}};persist();
 renderRoadmap()},600)}
-function continueGame(){fadeOutMenuMusic();const mm=document.getElementById('main-menu');mm.classList.add('fade-out');setTimeout(()=>{mm.classList.add('hidden');document.getElementById('app-container').classList.remove('hidden');
+function continueGame(){fadeOut(menuMusic,600,()=>{playRoadmapMusic()});const mm=document.getElementById('main-menu');mm.classList.add('fade-out');setTimeout(()=>{mm.classList.add('hidden');document.getElementById('app-container').classList.remove('hidden');
 renderRoadmap()},600)}
 })();
 // --- CONFIG ---
@@ -393,8 +406,8 @@ function formatTime(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+Strin
 function startTimer(){stopTimer();seconds=0;document.getElementById('timer-text').textContent='00:00';timerInterval=setInterval(()=>{seconds++;document.getElementById('timer-text').textContent=formatTime(seconds)},1000)}
 function stopTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null}}
 // --- START GAME ---
-function startGame(li){currentLevel=li;currentPuzzle=genPuzzle(li);if(!currentPuzzle)return;assignments={};selectedNum=null;moveStack=[];hintsUsed=0;document.getElementById('menu-screen').classList.remove('active');document.getElementById('game-screen').classList.add('active');document.getElementById('level-badge').textContent='Seviye '+(li+1);renderGrid();renderPalette();updateClues();startTimer()}
-function goToMenu(){stopTimer();document.getElementById('game-screen').classList.remove('active');document.getElementById('win-modal').classList.remove('active');document.getElementById('menu-screen').classList.add('active');renderRoadmap()}
+function startGame(li){fadeOut(roadmapMusic,400);currentLevel=li;currentPuzzle=genPuzzle(li);if(!currentPuzzle)return;assignments={};selectedNum=null;moveStack=[];hintsUsed=0;document.getElementById('menu-screen').classList.remove('active');document.getElementById('game-screen').classList.add('active');document.getElementById('level-badge').textContent='Seviye '+(li+1);renderGrid();renderPalette();updateClues();startTimer()}
+function goToMenu(){stopTimer();playRoadmapMusic();document.getElementById('game-screen').classList.remove('active');document.getElementById('win-modal').classList.remove('active');document.getElementById('menu-screen').classList.add('active');renderRoadmap()}
 // --- GRID RENDER ---
 function renderGrid(){const p=currentPuzzle;const gw=document.getElementById('grid-wrapper');const gc=document.getElementById('grid-container');gc.innerHTML='';gc.style.gridTemplateColumns=`repeat(${p.gridCols},var(--cell))`;gc.style.gridTemplateRows=`repeat(${p.gridRows},var(--cell))`;for(let r=0;r<p.gridRows;r++)for(let c=0;c<p.gridCols;c++){const cell=document.createElement('div');cell.className='grid-cell';cell.dataset.row=r;cell.dataset.col=c;gc.appendChild(cell)}const cs=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cell'));p.capsules.forEach(([id,r,c,dir,len])=>{const isH=dir==='h';const pad=4;const el=document.createElement('div');el.className='capsule '+(isH?'horizontal':'vertical');el.style.left=(c*cs+pad)+'px';el.style.top=(r*cs+pad)+'px';el.style.width=(isH?len*cs-pad*2:cs-pad*2)+'px';el.style.height=(isH?cs-pad*2:len*cs-pad*2)+'px';el.style.borderRadius=(isH?(cs-pad*2)/2:Math.min(cs-pad*2,(len*cs-pad*2))/2)+'px';const lbl=document.createElement('div');lbl.className='capsule-label';lbl.textContent=id;el.appendChild(lbl);const numEl=document.createElement('div');numEl.className='capsule-number';numEl.id='cap-num-'+id;el.appendChild(numEl);el.addEventListener('click',()=>onCapsuleClick(id));gc.appendChild(el)});// Clues
 p.rowClues.forEach((val,r)=>{const el=document.createElement('div');el.className='clue clue-row';el.id='clue-row-'+r;el.style.position='absolute';el.style.left=(p.gridCols*cs+4)+'px';el.style.top=(r*cs)+'px';el.style.width=cs*.8+'px';el.style.height=cs+'px';el.innerHTML=`<div class="clue-target">${val}</div><div class="clue-current" id="rc-${r}"></div>`;gc.appendChild(el)});p.colClues.forEach((val,c)=>{const el=document.createElement('div');el.className='clue clue-col';el.id='clue-col-'+c;el.style.position='absolute';el.style.left=(c*cs)+'px';el.style.top=(p.gridRows*cs+4)+'px';el.style.width=cs+'px';el.style.height=cs*.7+'px';el.innerHTML=`<div class="clue-target">${val}</div><div class="clue-current" id="cc-${c}"></div>`;gc.appendChild(el)})}
