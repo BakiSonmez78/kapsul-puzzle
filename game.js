@@ -74,8 +74,8 @@ function fadeOut(audio,dur,cb){
 if(audio.paused){if(cb)cb();return}
 let v=audio.volume;const step=v/(dur/30);
 const fo=setInterval(()=>{v-=step;if(v<=0){clearInterval(fo);audio.pause();audio.volume=0;if(cb)cb()}else{audio.volume=Math.max(v,0)}},30)}
-function playMenuMusic(){fadeIn(menuMusic,0.4,800)}
-function playRoadmapMusic(){fadeIn(roadmapMusic,0.35,800)}
+function playMenuMusic(){if(typeof musicEnabled!=='undefined'&&!musicEnabled)return;fadeIn(menuMusic,0.4,800)}
+function playRoadmapMusic(){if(typeof musicEnabled!=='undefined'&&!musicEnabled)return;fadeIn(roadmapMusic,0.35,800)}
 function showMainMenu(){const mm=document.getElementById('main-menu');mm.classList.remove('hidden');
 const mc=document.getElementById('menu-bg-canvas');const mctx=mc.getContext('2d');mc.width=window.innerWidth;mc.height=window.innerHeight;
 const menuParticles=[];for(let i=0;i<80;i++){menuParticles.push({x:Math.random()*mc.width,y:Math.random()*mc.height,vx:(Math.random()-.5)*.3,vy:-.2-Math.random()*.3,r:Math.random()*2+.5,color:['#00c6fb','#005bea','#7c3aed','#f472b6'][Math.floor(Math.random()*4)],a:Math.random()*.2+.05})}
@@ -101,6 +101,45 @@ renderRoadmap()},600)}
 function continueGame(){fadeOut(menuMusic,600,()=>{playRoadmapMusic()});const mm=document.getElementById('main-menu');mm.classList.add('fade-out');setTimeout(()=>{mm.classList.add('hidden');document.getElementById('app-container').classList.remove('hidden');
 renderRoadmap()},600)}
 })();
+// --- I18N (Language System) ---
+let currentLang=localStorage.getItem('kapsul-lang')||'tr';
+const I18N={
+tr:{newGame:'Yeni Oyun',continue:'Devam Et',howToPlay:'Nasıl Oynanır?',undo:'Geri Al',clear:'Temizle',hint:'İpucu',congrats:'Tebrikler!',excellent:'Mükemmel!',great:'Harika!',good:'İyi!',stars:'Yıldız',time:'Süre',hintLabel:'İpucu',nextLevel:'Sonraki Seviye →',mainMenu:'Ana Menü',gotIt:'Anladım!',settings:'Ayarlar',music:'Müzik',sfx:'Ses Efektleri',language:'Dil',close:'Kapat',level:'Seviye',noHints:'İpucu hakkın bitti!'},
+en:{newGame:'New Game',continue:'Continue',howToPlay:'How to Play?',undo:'Undo',clear:'Clear',hint:'Hint',congrats:'Congratulations!',excellent:'Excellent!',great:'Great!',good:'Good!',stars:'Stars',time:'Time',hintLabel:'Hints',nextLevel:'Next Level →',mainMenu:'Main Menu',gotIt:'Got it!',settings:'Settings',music:'Music',sfx:'Sound Effects',language:'Language',close:'Close',level:'Level',noHints:'No hints left!'}
+};
+function t(key){return I18N[currentLang][key]||I18N['tr'][key]||key}
+function applyLang(){
+document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(I18N[currentLang][k])el.textContent=I18N[currentLang][k]});
+document.getElementById('lang-tr').classList.toggle('active',currentLang==='tr');
+document.getElementById('lang-en').classList.toggle('active',currentLang==='en');
+localStorage.setItem('kapsul-lang',currentLang);
+}
+// --- SETTINGS (Music/SFX Toggle) ---
+let musicEnabled=localStorage.getItem('kapsul-music')!=='false';
+let sfxEnabled=localStorage.getItem('kapsul-sfx')!=='false';
+function updateSettingsUI(){
+document.getElementById('toggle-music').classList.toggle('active',musicEnabled);
+document.getElementById('toggle-sfx').classList.toggle('active',sfxEnabled);
+}
+function toggleMusic(){
+musicEnabled=!musicEnabled;localStorage.setItem('kapsul-music',musicEnabled);
+updateSettingsUI();
+if(!musicEnabled){if(window.menuMusic)window.menuMusic.pause();if(window.roadmapMusic)window.roadmapMusic.pause()}
+else{/* Resume music based on current screen */
+const gs=document.getElementById('game-screen');const ms=document.getElementById('menu-screen');
+const mm=document.getElementById('main-menu');
+if(!mm.classList.contains('hidden')&&!mm.classList.contains('fade-out'))playMenuMusic();
+else if(ms.classList.contains('active')&&!gs.classList.contains('active'))playRoadmapMusic();
+}}
+function toggleSfx(){sfxEnabled=!sfxEnabled;localStorage.setItem('kapsul-sfx',sfxEnabled);updateSettingsUI()}
+// --- HINT LIMIT ---
+const HINTS_PER_GAME=1;
+let hintRemaining=HINTS_PER_GAME;
+function updateHintBadge(){
+const badge=document.getElementById('hint-badge');const btn=document.getElementById('hint-btn');
+if(badge)badge.textContent=hintRemaining;
+if(btn){btn.classList.toggle('disabled',hintRemaining<=0)}
+}
 // --- CONFIG ---
 const LEVEL_CONFIGS = (()=>{const c=[];for(let i=1;i<=50;i++){let g,n,d;if(i<=5){g=4;n=4+Math.min(i-1,1);d='easy'}else if(i<=10){g=4;n=5+Math.floor((i-6)/2);d='easy'}else if(i<=18){g=5;n=5+Math.floor((i-11)/2);d='medium'}else if(i<=26){g=5;n=7+Math.floor((i-19)/3);d='medium'}else if(i<=35){g=6;n=7+Math.floor((i-27)/3);d='hard'}else if(i<=43){g=6;n=9+Math.floor((i-36)/3);d='expert'}else{g=7;n=10+Math.floor((i-44)/3);d='master'}n=Math.min(n,g===4?6:g===5?9:g===6?12:14);c.push({level:i,gridSize:g,numCount:n,diff:d})}return c})();
 const ZONES=[{name:'🌸 Bahar Vadisi',cls:'meadow',range:[1,10]},{name:'☀️ Yaz Ormanı',cls:'forest',range:[11,20]},{name:'🍂 Sonbahar Tepeleri',cls:'mountain',range:[21,30]},{name:'❄️ Kış Diyarı',cls:'volcano',range:[31,40]},{name:'✨ Büyülü Bahçe',cls:'crystal',range:[41,50]}];
@@ -115,7 +154,7 @@ function persist(){localStorage.setItem('kapsul-v6',JSON.stringify(save))}
 // --- AUDIO ---
 const AudioCtx=window.AudioContext||window.webkitAudioContext;let audioCtx;
 function ensureAudio(){if(!audioCtx)audioCtx=new AudioCtx()}
-function playTone(freq,dur=.12,type='sine',vol=.15){ensureAudio();const osc=audioCtx.createOscillator();const g=audioCtx.createGain();osc.type=type;osc.frequency.value=freq;g.gain.value=vol;g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+dur);osc.connect(g);g.connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+dur)}
+function playTone(freq,dur=.12,type='sine',vol=.15){if(!sfxEnabled)return;ensureAudio();const osc=audioCtx.createOscillator();const g=audioCtx.createGain();osc.type=type;osc.frequency.value=freq;g.gain.value=vol;g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+dur);osc.connect(g);g.connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+dur)}
 function sndPlace(){playTone(523,.1);setTimeout(()=>playTone(659,.1),50)}
 function sndRemove(){playTone(330,.08,'triangle')}
 function sndHint(){playTone(880,.15);setTimeout(()=>playTone(1047,.15),80)}
@@ -411,7 +450,7 @@ function formatTime(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+Strin
 function startTimer(){stopTimer();seconds=0;document.getElementById('timer-text').textContent='00:00';timerInterval=setInterval(()=>{seconds++;document.getElementById('timer-text').textContent=formatTime(seconds)},1000)}
 function stopTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null}}
 // --- START GAME ---
-function startGame(li){fadeOut(roadmapMusic,400);currentLevel=li;currentPuzzle=genPuzzle(li);if(!currentPuzzle)return;assignments={};selectedNum=null;moveStack=[];hintsUsed=0;document.getElementById('menu-screen').classList.remove('active');document.getElementById('game-screen').classList.add('active');document.getElementById('level-badge').textContent='Seviye '+(li+1);renderGrid();renderPalette();updateClues();startTimer()}
+function startGame(li){fadeOut(roadmapMusic,400);currentLevel=li;currentPuzzle=genPuzzle(li);if(!currentPuzzle)return;assignments={};selectedNum=null;moveStack=[];hintsUsed=0;hintRemaining=HINTS_PER_GAME;updateHintBadge();document.getElementById('menu-screen').classList.remove('active');document.getElementById('game-screen').classList.add('active');document.getElementById('level-badge').textContent=t('level')+' '+(li+1);renderGrid();renderPalette();updateClues();startTimer()}
 function goToMenu(){stopTimer();playRoadmapMusic();document.getElementById('game-screen').classList.remove('active');document.getElementById('win-modal').classList.remove('active');document.getElementById('menu-screen').classList.add('active');renderRoadmap()}
 // --- GRID RENDER ---
 function renderGrid(){const p=currentPuzzle;const gw=document.getElementById('grid-wrapper');const gc=document.getElementById('grid-container');gc.innerHTML='';gc.style.gridTemplateColumns=`repeat(${p.gridCols},var(--cell))`;gc.style.gridTemplateRows=`repeat(${p.gridRows},var(--cell))`;for(let r=0;r<p.gridRows;r++)for(let c=0;c<p.gridCols;c++){const cell=document.createElement('div');cell.className='grid-cell';cell.dataset.row=r;cell.dataset.col=c;gc.appendChild(cell)}const cs=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cell'));p.capsules.forEach(([id,r,c,dir,len])=>{const isH=dir==='h';const pad=4;const el=document.createElement('div');el.className='capsule '+(isH?'horizontal':'vertical');el.style.left=(c*cs+pad)+'px';el.style.top=(r*cs+pad)+'px';el.style.width=(isH?len*cs-pad*2:cs-pad*2)+'px';el.style.height=(isH?cs-pad*2:len*cs-pad*2)+'px';el.style.borderRadius=(isH?(cs-pad*2)/2:Math.min(cs-pad*2,(len*cs-pad*2))/2)+'px';const lbl=document.createElement('div');lbl.className='capsule-label';lbl.textContent=id;el.appendChild(lbl);const numEl=document.createElement('div');numEl.className='capsule-number';numEl.id='cap-num-'+id;el.appendChild(numEl);el.addEventListener('click',()=>onCapsuleClick(id));gc.appendChild(el)});// Clues
@@ -424,11 +463,11 @@ function updateAll(){updateCapsules();updatePalette();updateClues()}
 function updateCapsules(){currentPuzzle.capsules.forEach(([id])=>{const el=document.getElementById('cap-num-'+id);const capEl=el?.closest('.capsule');const val=assignments[id];if(el){el.textContent=val!=null?val:''}if(capEl){capEl.classList.toggle('filled',val!=null);capEl.classList.remove('hint-filled')}})}
 function updatePalette(){const used=new Set(Object.values(assignments));document.querySelectorAll('.num-btn').forEach(btn=>{const n=parseInt(btn.dataset.num);btn.classList.toggle('selected',selectedNum===n);btn.classList.toggle('used',used.has(n)&&selectedNum!==n)})}
 function updateClues(){const p=currentPuzzle;const rs=Array(p.gridRows).fill(0);const cs2=Array(p.gridCols).fill(0);const ri=Array(p.gridRows).fill(true);const ci=Array(p.gridCols).fill(true);p.capsules.forEach(([id,r,c,dir,len])=>{const v=assignments[id];if(v==null){for(let k=0;k<len;k++){if(dir==='h'){ri[r]=false;ci[c+k]=false}else{ri[r+k]=false;ci[c]=false}}}else{if(dir==='h'){rs[r]+=v;cs2[c]+=v;cs2[c+1]+=v}else{rs[r]+=v;rs[r+1]+=v;cs2[c]+=v}}});p.rowClues.forEach((target,r)=>{const el=document.getElementById('clue-row-'+r);const curEl=document.getElementById('rc-'+r);if(!el||!curEl)return;if(!ri[r]){curEl.textContent=rs[r]>0?rs[r]:'';el.className='clue clue-row'+(rs[r]>0?' partial':'')}else if(rs[r]===target){curEl.textContent='✓';el.className='clue clue-row correct'}else{curEl.textContent=rs[r];el.className='clue clue-row over'}});p.colClues.forEach((target,c)=>{const elc=document.getElementById('clue-col-'+c);const curEl=document.getElementById('cc-'+c);if(!elc||!curEl)return;if(!ci[c]){curEl.textContent=cs2[c]>0?cs2[c]:'';elc.className='clue clue-col'+(cs2[c]>0?' partial':'')}else if(cs2[c]===target){curEl.textContent='✓';elc.className='clue clue-col correct'}else{curEl.textContent=cs2[c];elc.className='clue clue-col over'}})}
-function checkWin(){if(Object.keys(assignments).length!==currentPuzzle.capsules.length)return;for(const[id]of currentPuzzle.capsules){if(assignments[id]!==currentPuzzle.solution[id]){sndErr();document.getElementById('grid-container').classList.add('shake');setTimeout(()=>document.getElementById('grid-container').classList.remove('shake'),400);return}}stopTimer();sndWin();launchConfetti();document.querySelectorAll('.capsule').forEach((el,i)=>{setTimeout(()=>el.classList.add('win-flash'),i*60)});let stars=3;if(hintsUsed>=2)stars=1;else if(hintsUsed===1)stars=2;if(seconds>120&&stars>1)stars--;save.stars[currentLevel]=Math.max(save.stars[currentLevel]||0,stars);if(currentLevel+1>=save.unlocked)save.unlocked=currentLevel+2;save.best[currentLevel]=Math.min(save.best[currentLevel]||9999,seconds);persist();setTimeout(()=>{document.getElementById('win-stars').textContent='⭐'.repeat(stars)+'☆'.repeat(3-stars);document.getElementById('win-star-count').textContent=stars;document.getElementById('win-time').textContent=formatTime(seconds);document.getElementById('win-hints').textContent=hintsUsed;document.getElementById('win-subtitle').textContent=stars===3?'Mükemmel!':stars===2?'Harika!':'İyi!';document.getElementById('win-modal').classList.add('active')},800)}
+function checkWin(){if(Object.keys(assignments).length!==currentPuzzle.capsules.length)return;for(const[id]of currentPuzzle.capsules){if(assignments[id]!==currentPuzzle.solution[id]){sndErr();document.getElementById('grid-container').classList.add('shake');setTimeout(()=>document.getElementById('grid-container').classList.remove('shake'),400);return}}stopTimer();sndWin();launchConfetti();document.querySelectorAll('.capsule').forEach((el,i)=>{setTimeout(()=>el.classList.add('win-flash'),i*60)});let stars=3;if(hintsUsed>=2)stars=1;else if(hintsUsed===1)stars=2;if(seconds>120&&stars>1)stars--;save.stars[currentLevel]=Math.max(save.stars[currentLevel]||0,stars);if(currentLevel+1>=save.unlocked)save.unlocked=currentLevel+2;save.best[currentLevel]=Math.min(save.best[currentLevel]||9999,seconds);persist();setTimeout(()=>{document.getElementById('win-stars').textContent='⭐'.repeat(stars)+'☆'.repeat(3-stars);document.getElementById('win-star-count').textContent=stars;document.getElementById('win-time').textContent=formatTime(seconds);document.getElementById('win-hints').textContent=hintsUsed;document.getElementById('win-subtitle').textContent=stars===3?t('excellent'):stars===2?t('great'):t('good');document.getElementById('win-modal').classList.add('active')},800)}
 // --- UNDO / HINT / CLEAR ---
 function undo(){if(moveStack.length===0)return;const last=moveStack.pop();if(last.val===null)delete assignments[last.id];else assignments[last.id]=last.val;selectedNum=null;sndRemove();updateAll()}
 function clearAll(){if(Object.keys(assignments).length===0)return;moveStack.push({type:'clear',state:{...assignments}});assignments={};selectedNum=null;sndRemove();updateAll()}
-function giveHint(){if(!currentPuzzle)return;const empty=currentPuzzle.capsules.filter(([id])=>assignments[id]==null);if(empty.length===0)return;const pick=empty[Math.floor(Math.random()*empty.length)];const[id]=pick;assignments[id]=currentPuzzle.solution[id];hintsUsed++;const el=document.getElementById('cap-num-'+id);const capEl=el?.closest('.capsule');if(el){el.classList.add('pop-in');setTimeout(()=>el.classList.remove('pop-in'),350)}if(capEl)capEl.classList.add('hint-filled');sndHint();updateAll();checkWin()}
+function giveHint(){if(!currentPuzzle)return;if(hintRemaining<=0){const hb=document.getElementById('hint-btn');if(hb){hb.classList.add('shake');setTimeout(()=>hb.classList.remove('shake'),400)}return}const empty=currentPuzzle.capsules.filter(([id])=>assignments[id]==null);if(empty.length===0)return;const pick=empty[Math.floor(Math.random()*empty.length)];const[id]=pick;assignments[id]=currentPuzzle.solution[id];hintsUsed++;hintRemaining--;updateHintBadge();const el=document.getElementById('cap-num-'+id);const capEl=el?.closest('.capsule');if(el){el.classList.add('pop-in');setTimeout(()=>el.classList.remove('pop-in'),350)}if(capEl)capEl.classList.add('hint-filled');sndHint();updateAll();checkWin()}
 // --- EVENT LISTENERS ---
 document.getElementById('back-btn').addEventListener('click',goToMenu);
 document.getElementById('undo-btn').addEventListener('click',undo);
@@ -446,6 +485,16 @@ setTimeout(()=>{if(pendingNextLevel>=0){startGame(pendingNextLevel);pendingNextL
 document.getElementById('menu-btn').addEventListener('click',goToMenu);
 document.getElementById('how-to-play-btn').addEventListener('click',()=>{document.getElementById('tutorial-modal').classList.add('active')});
 document.getElementById('close-tutorial-btn').addEventListener('click',()=>{document.getElementById('tutorial-modal').classList.remove('active')});
+// Settings listeners
+function openSettings(){document.getElementById('settings-modal').classList.add('active')}
+document.getElementById('settings-btn').addEventListener('click',openSettings);
+document.getElementById('settings-btn-game').addEventListener('click',openSettings);
+document.getElementById('close-settings-btn').addEventListener('click',()=>{document.getElementById('settings-modal').classList.remove('active')});
+document.getElementById('toggle-music').addEventListener('click',toggleMusic);
+document.getElementById('toggle-sfx').addEventListener('click',toggleSfx);
+document.getElementById('lang-tr').addEventListener('click',()=>{currentLang='tr';applyLang()});
+document.getElementById('lang-en').addEventListener('click',()=>{currentLang='en';applyLang()});
 document.addEventListener('keydown',e=>{const k=parseInt(e.key);if(k>=1&&k<=9&&currentPuzzle){const nums=currentPuzzle.numbers;if(nums.includes(k))onNumClick(k)}if(e.key==='z'&&e.ctrlKey)undo()});
 // INIT
+applyLang();updateSettingsUI();updateHintBadge();
 renderRoadmap();

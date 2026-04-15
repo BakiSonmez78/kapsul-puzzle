@@ -20,8 +20,8 @@
             <div class="menu-title-glow">KAPSÜL</div>
             <div class="menu-subtitle-text">SAYI BULMACASI</div>
             <div class="menu-buttons">
-                <button class="menu-btn-play" id="new-game-btn">🎮 New Game</button>
-                <button class="menu-btn-secondary" id="continue-btn" style="display:none">▶ Devam Et</button>
+                <button class="menu-btn-play" id="new-game-btn">🎮 <span data-i18n="newGame">Yeni Oyun</span></button>
+                <button class="menu-btn-secondary" id="continue-btn" style="display:none">▶ <span data-i18n="continue">Devam Et</span></button>
             </div>
             <div class="menu-footer">Yaz Games © 2026</div>
         </div>
@@ -36,7 +36,8 @@
                 <div class="subtitle">SAYI BULMACASI</div>
                 <div class="header-stats">
                     <div class="stat-chip">⭐ <span id="total-stars">0</span> /150</div>
-                    <button class="stat-chip clickable" id="how-to-play-btn">❓ Nasıl Oynanır?</button>
+                    <button class="stat-chip clickable" id="how-to-play-btn">❓ <span data-i18n="howToPlay">Nasıl Oynanır?</span></button>
+                    <button class="stat-chip clickable" id="settings-btn">⚙️</button>
                 </div>
             </div>
             <div class="roadmap-scroll" id="roadmap-scroll">
@@ -53,7 +54,10 @@
             <div class="game-header">
                 <button class="icon-btn" id="back-btn">←</button>
                 <span class="level-badge" id="level-badge">Seviye 1</span>
-                <div class="timer">🕐 <span id="timer-text">00:00</span></div>
+                <div class="game-header-right">
+                    <button class="icon-btn small" id="settings-btn-game">⚙️</button>
+                    <div class="timer">🕐 <span id="timer-text">00:00</span></div>
+                </div>
             </div>
             <div class="game-area">
                 <div class="grid-wrapper" id="grid-wrapper">
@@ -61,9 +65,9 @@
                 </div>
                 <div class="number-palette" id="number-palette"></div>
                 <div class="game-controls">
-                    <button class="ctrl-btn" id="undo-btn">↩ Geri Al</button>
-                    <button class="ctrl-btn" id="clear-btn">🗑 Temizle</button>
-                    <button class="ctrl-btn accent" id="hint-btn">💡 İpucu</button>
+                    <button class="ctrl-btn" id="undo-btn">↩ <span data-i18n="undo">Geri Al</span></button>
+                    <button class="ctrl-btn" id="clear-btn">🗑 <span data-i18n="clear">Temizle</span></button>
+                    <button class="ctrl-btn accent" id="hint-btn">💡 <span data-i18n="hint">İpucu</span> <span class="hint-badge" id="hint-badge">1</span></button>
                 </div>
             </div>
         </div>
@@ -73,16 +77,16 @@
             <div class="modal-backdrop"></div>
             <div class="modal-content">
                 <div class="win-stars" id="win-stars">⭐⭐⭐</div>
-                <div class="win-title">Tebrikler!</div>
-                <div class="win-subtitle" id="win-subtitle">Mükemmel!</div>
+                <div class="win-title" data-i18n="congrats">Tebrikler!</div>
+                <div class="win-subtitle" id="win-subtitle" data-i18n="excellent">Mükemmel!</div>
                 <div class="win-stats">
-                    <div class="stat"><span class="stat-label">Yıldız</span><span class="stat-value" id="win-star-count">3</span></div>
-                    <div class="stat"><span class="stat-label">Süre</span><span class="stat-value" id="win-time">00:00</span></div>
-                    <div class="stat"><span class="stat-label">İpucu</span><span class="stat-value" id="win-hints">0</span></div>
+                    <div class="stat"><span class="stat-label" data-i18n="stars">Yıldız</span><span class="stat-value" id="win-star-count">3</span></div>
+                    <div class="stat"><span class="stat-label" data-i18n="time">Süre</span><span class="stat-value" id="win-time">00:00</span></div>
+                    <div class="stat"><span class="stat-label" data-i18n="hintLabel">İpucu</span><span class="stat-value" id="win-hints">0</span></div>
                 </div>
                 <div class="win-actions">
-                    <button class="btn-primary" id="next-level-btn">Sonraki Seviye →</button>
-                    <button class="btn-secondary" id="menu-btn">Ana Menü</button>
+                    <button class="btn-primary" id="next-level-btn" data-i18n="nextLevel">Sonraki Seviye →</button>
+                    <button class="btn-secondary" id="menu-btn" data-i18n="mainMenu">Ana Menü</button>
                 </div>
             </div>
         </div>
@@ -99,7 +103,33 @@
                     <div class="tutorial-step"><div class="step-num">4</div><div class="step-text"><strong>Tamamla!</strong><p>Tüm kapsülleri doğru doldurursan seviyeyi geçersin!</p></div></div>
                 </div>
                 <div class="tutorial-tips"><p>💡 İpucu butonuyla yardım alabilirsin (yıldız puanını düşürür).</p><p>↩ Geri al butonuyla hamleleri geri alabilirsin.</p><p>⌨️ Klavyeden 1-9 tuşlarıyla sayı seçebilirsin.</p></div>
-                <button class="btn-primary" id="close-tutorial-btn">Anladım!</button>
+                <button class="btn-primary" id="close-tutorial-btn" data-i18n="gotIt">Anladım!</button>
+            </div>
+        </div>
+
+        <!-- SETTINGS MODAL -->
+        <div class="modal" id="settings-modal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content settings-content">
+                <div class="settings-title" data-i18n="settings">Ayarlar</div>
+                <div class="settings-group">
+                    <div class="setting-row">
+                        <span class="setting-label">🎵 <span data-i18n="music">Müzik</span></span>
+                        <button class="toggle-btn active" id="toggle-music"><span class="toggle-knob"></span></button>
+                    </div>
+                    <div class="setting-row">
+                        <span class="setting-label">🔊 <span data-i18n="sfx">Ses Efektleri</span></span>
+                        <button class="toggle-btn active" id="toggle-sfx"><span class="toggle-knob"></span></button>
+                    </div>
+                    <div class="setting-row">
+                        <span class="setting-label">🌐 <span data-i18n="language">Dil</span></span>
+                        <div class="lang-switcher">
+                            <button class="lang-btn active" id="lang-tr">TR</button>
+                            <button class="lang-btn" id="lang-en">EN</button>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-primary" id="close-settings-btn" data-i18n="close">Kapat</button>
             </div>
         </div>
     </div>
