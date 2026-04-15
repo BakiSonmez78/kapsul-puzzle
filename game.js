@@ -483,19 +483,19 @@ charStaticIdx=toLvl;
 const nextNode=document.querySelectorAll('.road-node')[toLvl];if(nextNode){nextNode.classList.add('current');const nc=nextNode.querySelector('.node-circle');if(nc)nc.style.boxShadow='0 0 40px rgba(0,198,251,0.6)'}// Auto-start the next level after a visible pause
 setTimeout(()=>{if(pendingNextLevel>=0){startGame(pendingNextLevel);pendingNextLevel=-1;charStaticIdx=-1}},800)})},700)});
 document.getElementById('menu-btn').addEventListener('click',goToMenu);
-document.getElementById('how-to-play-btn').addEventListener('click',()=>{document.getElementById('tutorial-modal').classList.add('active')});
-document.getElementById('how-to-play-menu-btn').addEventListener('click',()=>{document.getElementById('tutorial-modal').classList.add('active')});
-document.getElementById('close-tutorial-btn').addEventListener('click',()=>{document.getElementById('tutorial-modal').classList.remove('active')});
+document.getElementById('how-to-play-btn')?.addEventListener('click',()=>{document.getElementById('tutorial-modal').classList.add('active')});
+document.getElementById('how-to-play-menu-btn')?.addEventListener('click',()=>{document.getElementById('tutorial-modal').classList.add('active')});
+document.getElementById('close-tutorial-btn')?.addEventListener('click',()=>{document.getElementById('tutorial-modal').classList.remove('active')});
 // Settings listeners
 function openSettings(){document.getElementById('settings-modal').classList.add('active')}
-document.getElementById('settings-btn').addEventListener('click',openSettings);
-document.getElementById('settings-btn-game').addEventListener('click',openSettings);
-document.getElementById('settings-menu-btn').addEventListener('click',openSettings);
-document.getElementById('close-settings-btn').addEventListener('click',()=>{document.getElementById('settings-modal').classList.remove('active')});
-document.getElementById('toggle-music').addEventListener('click',toggleMusic);
-document.getElementById('toggle-sfx').addEventListener('click',toggleSfx);
-document.getElementById('lang-tr').addEventListener('click',()=>{currentLang='tr';applyLang()});
-document.getElementById('lang-en').addEventListener('click',()=>{currentLang='en';applyLang()});
+document.getElementById('settings-btn')?.addEventListener('click',openSettings);
+document.getElementById('settings-btn-game')?.addEventListener('click',openSettings);
+document.getElementById('settings-menu-btn')?.addEventListener('click',openSettings);
+document.getElementById('close-settings-btn')?.addEventListener('click',()=>{document.getElementById('settings-modal').classList.remove('active')});
+document.getElementById('toggle-music')?.addEventListener('click',toggleMusic);
+document.getElementById('toggle-sfx')?.addEventListener('click',toggleSfx);
+document.getElementById('lang-tr')?.addEventListener('click',()=>{currentLang='tr';applyLang()});
+document.getElementById('lang-en')?.addEventListener('click',()=>{currentLang='en';applyLang()});
 document.addEventListener('keydown',e=>{const k=parseInt(e.key);if(k>=1&&k<=9&&currentPuzzle){const nums=currentPuzzle.numbers;if(nums.includes(k))onNumClick(k)}if(e.key==='z'&&e.ctrlKey)undo()});
 // INIT
 applyLang();updateSettingsUI();updateHintBadge();
