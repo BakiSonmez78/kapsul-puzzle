@@ -91,50 +91,50 @@
                     <button class="btn-secondary" id="menu-btn" data-i18n="mainMenu">Ana Menü</button>
                 </div>
             </div>
-        </div>
+    </div>
 
-        <!-- TUTORIAL MODAL -->
-        <div class="modal" id="tutorial-modal">
-            <div class="modal-backdrop"></div>
-            <div class="modal-content tutorial-content">
-                <div class="tutorial-title">Nasıl Oynanır?</div>
-                <div class="tutorial-steps">
-                    <div class="tutorial-step"><div class="step-num">1</div><div class="step-text"><strong>Sayı Seç</strong><p>Alt paletten kullanmak istediğin sayıya tıkla.</p></div></div>
-                    <div class="tutorial-step"><div class="step-num">2</div><div class="step-text"><strong>Kapsüle Yerleştir</strong><p>Seçtiğin sayıyı bir kapsüle tıklayarak yerleştir.</p></div></div>
-                    <div class="tutorial-step"><div class="step-num">3</div><div class="step-text"><strong>Toplamları Kontrol Et</strong><p>Her satır ve sütunun toplamı kenardaki sayıya eşit olmalı.</p></div></div>
-                    <div class="tutorial-step"><div class="step-num">4</div><div class="step-text"><strong>Tamamla!</strong><p>Tüm kapsülleri doğru doldurursan seviyeyi geçersin!</p></div></div>
-                </div>
-                <div class="tutorial-tips"><p>💡 İpucu butonuyla yardım alabilirsin (yıldız puanını düşürür).</p><p>↩ Geri al butonuyla hamleleri geri alabilirsin.</p><p>⌨️ Klavyeden 1-9 tuşlarıyla sayı seçebilirsin.</p></div>
-                <button class="btn-primary" id="close-tutorial-btn" data-i18n="gotIt">Anladım!</button>
+    <!-- TUTORIAL MODAL (outside app-container so it works from main menu too) -->
+    <div class="modal" id="tutorial-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content tutorial-content">
+            <div class="tutorial-title" data-i18n="howToPlay">Nasıl Oynanır?</div>
+            <div class="tutorial-steps">
+                <div class="tutorial-step"><div class="step-num">1</div><div class="step-text"><strong>Sayı Seç</strong><p>Alt paletten kullanmak istediğin sayıya tıkla.</p></div></div>
+                <div class="tutorial-step"><div class="step-num">2</div><div class="step-text"><strong>Kapsüle Yerleştir</strong><p>Seçtiğin sayıyı bir kapsüle tıklayarak yerleştir.</p></div></div>
+                <div class="tutorial-step"><div class="step-num">3</div><div class="step-text"><strong>Toplamları Kontrol Et</strong><p>Her satır ve sütunun toplamı kenardaki sayıya eşit olmalı.</p></div></div>
+                <div class="tutorial-step"><div class="step-num">4</div><div class="step-text"><strong>Tamamla!</strong><p>Tüm kapsülleri doğru doldurursan seviyeyi geçersin!</p></div></div>
             </div>
-        </div>
-
-        <!-- SETTINGS MODAL -->
-        <div class="modal" id="settings-modal">
-            <div class="modal-backdrop"></div>
-            <div class="modal-content settings-content">
-                <div class="settings-title" data-i18n="settings">Ayarlar</div>
-                <div class="settings-group">
-                    <div class="setting-row">
-                        <span class="setting-label">🎵 <span data-i18n="music">Müzik</span></span>
-                        <button class="toggle-btn active" id="toggle-music"><span class="toggle-knob"></span></button>
-                    </div>
-                    <div class="setting-row">
-                        <span class="setting-label">🔊 <span data-i18n="sfx">Ses Efektleri</span></span>
-                        <button class="toggle-btn active" id="toggle-sfx"><span class="toggle-knob"></span></button>
-                    </div>
-                    <div class="setting-row">
-                        <span class="setting-label">🌐 <span data-i18n="language">Dil</span></span>
-                        <div class="lang-switcher">
-                            <button class="lang-btn active" id="lang-tr">TR</button>
-                            <button class="lang-btn" id="lang-en">EN</button>
-                        </div>
-                    </div>
-                </div>
-                <button class="btn-primary" id="close-settings-btn" data-i18n="close">Kapat</button>
-            </div>
+            <div class="tutorial-tips"><p>💡 İpucu butonuyla yardım alabilirsin (yıldız puanını düşürür).</p><p>↩ Geri al butonuyla hamleleri geri alabilirsin.</p><p>⌨️ Klavyeden 1-9 tuşlarıyla sayı seçebilirsin.</p></div>
+            <button class="btn-primary" id="close-tutorial-btn" data-i18n="gotIt">Anladım!</button>
         </div>
     </div>
+
+    <!-- SETTINGS MODAL (outside app-container) -->
+    <div class="modal" id="settings-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content settings-content">
+            <div class="settings-title" data-i18n="settings">Ayarlar</div>
+            <div class="settings-group">
+                <div class="setting-row">
+                    <span class="setting-label">🎵 <span data-i18n="music">Müzik</span></span>
+                    <button class="toggle-btn active" id="toggle-music"><span class="toggle-knob"></span></button>
+                </div>
+                <div class="setting-row">
+                    <span class="setting-label">🔊 <span data-i18n="sfx">Ses Efektleri</span></span>
+                    <button class="toggle-btn active" id="toggle-sfx"><span class="toggle-knob"></span></button>
+                </div>
+                <div class="setting-row">
+                    <span class="setting-label">🌐 <span data-i18n="language">Dil</span></span>
+                    <div class="lang-switcher">
+                        <button class="lang-btn active" id="lang-tr">TR</button>
+                        <button class="lang-btn" id="lang-en">EN</button>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-primary" id="close-settings-btn" data-i18n="close">Kapat</button>
+        </div>
+    </div>
+
     <script src="game.js"></script>
 </body>
 </html>
